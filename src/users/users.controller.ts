@@ -7,7 +7,9 @@ import {
   Body,
   Put,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -15,11 +17,13 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
+  @UseGuards(AuthGuard('jwt'))
   async findAll() {
     return this.usersService.findAll();
   }
 
   @Get('/get-user/:id')
+  @UseGuards(AuthGuard('jwt'))
   async findById(@Param('id') id: number) {
     return this.usersService.findById(id);
   }
@@ -39,6 +43,7 @@ export class UsersController {
   }
 
   @Put('/update-user/:id')
+  @UseGuards(AuthGuard('jwt'))
   async update(
     @Param('id') id: number,
     @Body()
@@ -60,6 +65,7 @@ export class UsersController {
   }
 
   @Delete('/delete-user/:id')
+  @UseGuards(AuthGuard('jwt'))
   async remove(@Param('id') id: number) {
     return this.usersService.remove(id);
   }
