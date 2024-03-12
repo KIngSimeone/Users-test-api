@@ -77,6 +77,7 @@ export class UsersService {
     phoneNumber: string,
   ) {
     const existingUser = await this.findById(id);
+
     if (!existingUser) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
@@ -106,15 +107,15 @@ export class UsersService {
         `Phone number ${phoneNumber} is already in use by another user`,
       );
     }
-    const [updatedRowsCount, [updatedUser]] = await this.userModel.update(
-      { firstName, lastName, email, phoneNumber },
-      {
-        where: { id },
-        returning: true,
-      },
-    );
 
-    return updatedUser;
+    existingUser.firstName = firstName;
+    existingUser.lastName = lastName;
+    existingUser.email = email;
+    existingUser.phoneNumber = phoneNumber;
+
+    await existingUser.save();
+
+    return existingUser.toJSON();
   }
 
   async remove(id: number) {
