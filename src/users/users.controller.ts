@@ -103,8 +103,8 @@ export class UsersController {
       return { message: 'Invalid credentials' };
     }
 
-    const { id, firstName, lastName, email } = user;
-
+    const { id, firstName, lastName, email, phoneNumber } = user;
+    console.log(user.id)
     // Create and return the access token
     const token = await this.usersService.generateAccessToken({
       sub: id,
@@ -112,7 +112,7 @@ export class UsersController {
     });
 
     return {
-      user: { id, firstName, lastName, email },
+      user: { id: user.id, firstName, lastName, email, phoneNumber },
       access_token: token,
     };
   }

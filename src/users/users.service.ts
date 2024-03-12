@@ -116,7 +116,7 @@ export class UsersService {
 
     if (user && (await bcrypt.compare(password, user.password))) {
       const { password, ...result } = user;
-      return result;
+      return user;
     }
 
     return null;
