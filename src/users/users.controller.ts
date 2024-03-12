@@ -8,18 +8,18 @@ import {
   Put,
   Delete,
   UseGuards,
-  Request,
-  Response,
+
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from './users.service';
+import { JwtAuthGuard } from 'src/jwt-auth.guartds';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   async findAll() {
     return this.usersService.findAll();
   }

@@ -103,8 +103,9 @@ export class UsersService {
     }
   }
 
-  async getUserByIDForJwt(_id: any) {
-    const user = await this.userModel.findByPk(_id);
+  async getUserByIDForJwt(email: any) {
+    console.log(_id)
+    const user = await this.findUserByEmail(email);
     if (!user) {
       throw new HttpException('Invalid User', HttpStatus.UNAUTHORIZED);
     }
