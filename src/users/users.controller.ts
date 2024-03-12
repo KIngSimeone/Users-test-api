@@ -8,6 +8,8 @@ import {
   Put,
   Delete,
   UseGuards,
+  Request,
+  Response,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from './users.service';
@@ -36,10 +38,30 @@ export class UsersController {
       lastName: string;
       email: string;
       phoneNumber: string;
+      password: string;
     },
   ) {
-    const { firstName, lastName, email, phoneNumber } = createUser;
-    return this.usersService.create(firstName, lastName, email, phoneNumber);
+    const { firstName, lastName, email, phoneNumber, password } = createUser;
+
+    const hashedPassword = await this.usersService.hashPassword(password);
+
+    const user = await this.usersService.create(
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      hashedPassword,
+    );
+
+    const token = this.usersService.generateAccessToken({
+      sub: user.id,
+      email,
+    });
+
+    return {
+      user: { id: user.id, firstName, lastName, email, phoneNumber },
+      access_token: token,
+    };
   }
 
   @Put('/update-user/:id')
@@ -68,5 +90,30 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'))
   async remove(@Param('id') id: number) {
     return this.usersService.remove(id);
+  }
+
+  @Post('/login')
+  async login(@Body() loginUser: { email: string; password: string }) {
+    const user = await this.usersService.validateUser(
+      loginUser.email,
+      loginUser.password,
+    );
+
+    if (!user) {
+      return { message: 'Invalid credentials' };
+    }
+
+    const { id, firstName, lastName, email } = user;
+
+    // Create and return the access token
+    const token = await this.usersService.generateAccessToken({
+      sub: id,
+      email,
+    });
+
+    return {
+      user: { id, firstName, lastName, email },
+      access_token: token,
+    };
   }
 }

@@ -1,4 +1,6 @@
 import { SequelizeModuleOptions } from '@nestjs/sequelize';
+import { config } from 'dotenv';
+config();
 
 const sequelizeConfig: SequelizeModuleOptions = {
   dialect: 'mysql',
@@ -8,7 +10,7 @@ const sequelizeConfig: SequelizeModuleOptions = {
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   autoLoadModels: true,
-  synchronize: true,
+  synchronize: true, 
 };
 
 export default sequelizeConfig;
