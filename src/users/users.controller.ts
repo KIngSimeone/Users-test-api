@@ -25,7 +25,7 @@ export class UsersController {
   }
 
   @Get('/get-user/:id')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   async findById(@Param('id') id: number) {
     return this.usersService.findById(id);
   }
@@ -65,7 +65,7 @@ export class UsersController {
   }
 
   @Put('/update-user/:id')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   async update(
     @Param('id') id: number,
     @Body()
@@ -87,7 +87,7 @@ export class UsersController {
   }
 
   @Delete('/delete-user/:id')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   async remove(@Param('id') id: number) {
     return this.usersService.remove(id);
   }
