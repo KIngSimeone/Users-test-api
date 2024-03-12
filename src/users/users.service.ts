@@ -4,6 +4,8 @@ import {
   HttpStatus,
   HttpException,
   BadRequestException,
+  ConflictException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from './users.schema';
@@ -77,6 +79,32 @@ export class UsersService {
     const existingUser = await this.findById(id);
     if (!existingUser) {
       throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    if (existingUser.id !== id) {
+      throw new ForbiddenException(
+        `You do not have permission to update user with ID ${id}`,
+      );
+    }
+
+    const userWithEmail = await this.userModel.findOne({
+      where: { email, id: { [Op.not]: id } },
+    });
+
+    if (userWithEmail) {
+      throw new ConflictException(
+        `Email ${email} is already in use by another user`,
+      );
+    }
+
+    const userWithPhoneNumber = await this.userModel.findOne({
+      where: { phoneNumber, id: { [Op.not]: id } },
+    });
+
+    if (userWithPhoneNumber) {
+      throw new ConflictException(
+        `Phone number ${phoneNumber} is already in use by another user`,
+      );
     }
     const [updatedRowsCount, [updatedUser]] = await this.userModel.update(
       { firstName, lastName, email, phoneNumber },
