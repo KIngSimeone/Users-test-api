@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, HttpStatus, HttpException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from './users.schema';
 
@@ -64,5 +64,13 @@ export class UsersService {
     if (deletedRowsCount === 0) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
+  }
+
+  async getUserByIDForJwt(_id: any) {
+    const user = await this.userModel.findByPk(_id);
+    if (!user) {
+      throw new HttpException('Invalid User', HttpStatus.UNAUTHORIZED);
+    }
+    return user;
   }
 }
